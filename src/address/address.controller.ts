@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { jwtGuard } from 'src/auth/jwt.guard';
 import { AddressService } from './address.service';
-import { CreateAddressDto } from './dto/CreateAddress.dto';
+import { CreateAddressDto } from './dto/createAddress.dto';
 import 'moment/locale/ko';
 
 @ApiTags('주소 api')
