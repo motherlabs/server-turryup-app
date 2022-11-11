@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  PARTNER
+  TASTER
+}
+
+enum UserState {
+  BUYER
+  SELLER
+  DELETE
+}
+
+enum DefaultState {
+  NORMAL
+  DELETE
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  uniqueCode  String    @unique
+  phoneNumber String    @unique
+  fcmToken    String?
+  role        UserRole  @default(USER)
+  state       UserState @default(BUYER)
+  createdAt   DateTime  @default(now())
+  Address     Address[]
+  Store       Store?
+  Payment     Payment[]
+  Basket      Basket[]
+}
+
+model Address {
+  id        Int          @id @default(autoincrement())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int
+  name      String
+  range     Float
+  latitude  Float
+  longitude Float
+  state     DefaultState @default(NORMAL)
+  createdAt DateTime     @default(now())
+}
+
+model Store {
+  id              Int          @id @default(autoincrement())
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId          Int          @unique
+  name            String
+  storeNumber     String       @unique
+  roadNameAddress String
+  detailAddress   String
+  picupZone       String
+  businessHours   String
+  dayOff          String
+  latitude        Float
+  longitude       Float
+  state           DefaultState @default(NORMAL)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  Goods           Goods[]
+  Order           Order[]
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  name  String
+  sort  Int     @default(autoincrement())
+  Goods Goods[]
+}
+
+model Goods {
+  id          Int          @id @default(autoincrement())
+  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storeId     Int
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categoryId  Int
+  name        String
+  originPrice Int
+  salePrice   Int
+  discount    Int
+  expiryDate  DateTime     @db.Date
+  quantity    Int
+  state       DefaultState @default(NORMAL)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  GoodsImage  GoodsImage[]
+  Order       Order[]
+  Basket      Basket[]
+}
+
+model GoodsImage {
+  id       Int    @id @default(autoincrement())
+  goods    Goods  @relation(fields: [goodsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  goodsId  Int
+  location String
+}
+
+model Payment {
+  id        Int          @id @default(autoincrement())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    Int
+  amount    Int
+  method    String
+  state     DefaultState @default(NORMAL)
+  createdAt DateTime     @default(now())
+  Order     Order[]
+}
+
+model Order {
+  id          Int          @id @default(autoincrement())
+  payment     Payment      @relation(fields: [paymentId], references: [id])
+  paymentId   Int
+  store       Store        @relation(fields: [storeId], references: [id], onUpdate: Cascade)
+  storeId     Int
+  goods       Goods        @relation(fields: [goodsId], references: [id], onUpdate: Cascade)
+  goodsId     Int
+  orderNumber String       @unique
+  status      String
+  quantity    Int
+  price       Int
+  state       DefaultState @default(NORMAL)
+  createdAt   DateTime     @default(now())
+  readAt      DateTime?
+}
+
+model Basket {
+  id        Int          @id @default(autoincrement())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int
+  goods     Goods        @relation(fields: [goodsId], references: [id], onUpdate: Cascade)
+  goodsId   Int
+  quantity  Int
+  state     DefaultState @default(NORMAL)
+  createdAt DateTime     @default(now())
+}
