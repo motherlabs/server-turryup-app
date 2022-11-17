@@ -46,6 +46,7 @@ export class StoreService {
       include: {
         Goods: {
           include: { GoodsImage: true, store: true },
+          orderBy: { createdAt: 'desc' },
         },
         Order: {
           include: {

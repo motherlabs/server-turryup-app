@@ -24,10 +24,10 @@ CREATE TABLE "User" (
 CREATE TABLE "Address" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
-    "address" TEXT NOT NULL,
-    "seletedRange" INTEGER NOT NULL,
-    "latitude" INTEGER NOT NULL,
-    "longitude" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "range" DOUBLE PRECISION NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
     "state" "DefaultState" NOT NULL DEFAULT 'NORMAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -35,29 +35,18 @@ CREATE TABLE "Address" (
 );
 
 -- CreateTable
-CREATE TABLE "Saving" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "state" "DefaultState" NOT NULL DEFAULT 'NORMAL',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "Saving_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Store" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
-    "phoneNumber" TEXT NOT NULL,
+    "storeNumber" TEXT NOT NULL,
     "roadNameAddress" TEXT NOT NULL,
     "detailAddress" TEXT NOT NULL,
     "picupZone" TEXT NOT NULL,
     "businessHours" TEXT NOT NULL,
     "dayOff" TEXT NOT NULL,
-    "latitude" INTEGER NOT NULL,
-    "longitude" INTEGER NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
     "state" "DefaultState" NOT NULL DEFAULT 'NORMAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -83,7 +72,7 @@ CREATE TABLE "Goods" (
     "originPrice" INTEGER NOT NULL,
     "salePrice" INTEGER NOT NULL,
     "discount" INTEGER NOT NULL,
-    "expiryDate" TIMESTAMP(3) NOT NULL,
+    "expiryDate" DATE NOT NULL,
     "quantity" INTEGER NOT NULL,
     "state" "DefaultState" NOT NULL DEFAULT 'NORMAL',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -130,6 +119,18 @@ CREATE TABLE "Order" (
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Basket" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "goodsId" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "state" "DefaultState" NOT NULL DEFAULT 'NORMAL',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Basket_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_uniqueCode_key" ON "User"("uniqueCode");
 
@@ -140,13 +141,13 @@ CREATE UNIQUE INDEX "User_phoneNumber_key" ON "User"("phoneNumber");
 CREATE UNIQUE INDEX "Store_userId_key" ON "Store"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Order_paymentId_key" ON "Order"("paymentId");
+CREATE UNIQUE INDEX "Store_storeNumber_key" ON "Store"("storeNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Saving" ADD CONSTRAINT "Saving_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Store" ADD CONSTRAINT "Store_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -171,3 +172,9 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_storeId_fkey" FOREIGN KEY ("storeId") 
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_goodsId_fkey" FOREIGN KEY ("goodsId") REFERENCES "Goods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Basket" ADD CONSTRAINT "Basket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Basket" ADD CONSTRAINT "Basket_goodsId_fkey" FOREIGN KEY ("goodsId") REFERENCES "Goods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

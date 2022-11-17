@@ -23,7 +23,6 @@ export class BasketService {
   }
 
   async deleteAll(basketIdList: number[], userId: number) {
-    console.log('check');
     return await this.prismaService.basket.deleteMany({
       where: { userId, id: { in: basketIdList } },
     });
