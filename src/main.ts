@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'body-parser';
 import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
+import admin from 'firebase-admin';
+import * as serviceAcount from './firebase/turryupapp-firebase-adminsdk-nlsad-b82f9d505f.json';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +17,14 @@ async function bootstrap() {
   });
   //global pipes validator setting
   app.useGlobalPipes(new ValidationPipe());
+
+  //firebase admin
+  process.env.GOOGLE_APPLICATION_CREDENTIALS =
+    'turryupapp-firebase-adminsdk-nlsad-b82f9d505f.json';
+  admin.initializeApp({
+    //@ts-ignore
+    credential: admin.credential.cert(serviceAcount),
+  });
 
   // Swagger setting
   if (process.env.NODE_ENV === 'development') {

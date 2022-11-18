@@ -29,4 +29,12 @@ export class CreateOrderDto {
   @ApiProperty({ required: true })
   @IsString()
   readonly status: string;
+
+  @ApiProperty({ required: true })
+  @IsNumber()
+  readonly targetId: number;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  readonly goodsName: string;
 }
