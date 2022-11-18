@@ -27,6 +27,13 @@ export class UserService {
     });
   }
 
+  async updateFcmToken(fcmToken: string, userId: number) {
+    return await this.prismaService.user.update({
+      where: { id: userId },
+      data: { fcmToken },
+    });
+  }
+
   async findAll() {
     return await this.prismaService.user.findMany({
       where: {

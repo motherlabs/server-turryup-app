@@ -38,6 +38,26 @@ export class UserController {
     }
   }
 
+  @Patch('fcmToken')
+  @UseGuards(jwtGuard)
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        fcmToken: {
+          type: 'string',
+          nullable: false,
+        },
+      },
+    },
+  })
+  @ApiBearerAuth('accessToken')
+  async updateFcmToken(@Req() req, @Body() body) {
+    const { fcmToken } = body;
+    const { id } = req.user;
+    return this.userService.updateFcmToken(fcmToken, id);
+  }
+
   @Get('findAll')
   @UseGuards(jwtGuard)
   @ApiBearerAuth('accessToken')
