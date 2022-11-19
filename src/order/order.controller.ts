@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -23,14 +24,13 @@ import { OrderService } from './order.service';
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
-  @Get('/:storeId')
-  @ApiParam({ name: 'storeId', required: true })
+  @Get('/monthly')
   @UseGuards(jwtGuard)
-  @ApiOperation({ summary: '주문 리스트' })
   @ApiBearerAuth('accessToken')
-  async findAllByStoreId(@Param() param) {
-    const { storeId } = param;
-    return this.orderService.findAllByStoreId(parseInt(storeId));
+  @ApiOperation({ summary: '월간 판매내역' })
+  async monthlyOrders(@Req() req) {
+    const { id } = req.user;
+    return this.orderService.monthlyOrdersByStore(id);
   }
 
   @Post('/')

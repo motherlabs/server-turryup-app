@@ -9,8 +9,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { UserRole, UserState } from '@prisma/client';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import { jwtGuard } from 'src/auth/jwt.guard';
 import { UpdateRoleDto } from './dto/updateRole.dto';
 import { UserService } from './user.service';
@@ -67,5 +67,14 @@ export class UserController {
     } else {
       return new ForbiddenException();
     }
+  }
+
+  @Post('/delete')
+  @UseGuards(jwtGuard)
+  @ApiBearerAuth('accessToken')
+  @ApiOperation({ summary: '회원 탈퇴' })
+  async delete(@Req() req) {
+    const { id } = req.user;
+    return this.userService.delete(id);
   }
 }
