@@ -53,6 +53,7 @@ export class StoreService {
             goods: { include: { GoodsImage: true } },
             payment: { include: { user: true } },
           },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });

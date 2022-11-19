@@ -8,10 +8,17 @@ import admin from 'firebase-admin';
 export class OrderService {
   constructor(private prismaService: PrismaService) {}
 
-  async findAllByStoreId(storeId: number) {
-    return await this.prismaService.order.findMany({
-      where: { storeId },
-      include: { goods: { include: { GoodsImage: true } } },
+  async monthlyOrdersByStore(userId: number) {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const monthly = new Date(year, month, 1, 0, 0, 0, 0);
+
+    return await this.prismaService.store.findUnique({
+      where: { userId },
+      include: {
+        Order: { where: { createdAt: { gt: monthly }, status: '픽업 완료' } },
+      },
     });
   }
 
@@ -46,7 +53,7 @@ export class OrderService {
         admin.messaging().send({
           token: targetUser.fcmToken,
           notification: {
-            title: '주문이 들어왔습니다',
+            title: '주문이 들어왔습니다.',
             body: `상품 ${goodsName}\n수량 ${quantity}개`,
           },
           android: {

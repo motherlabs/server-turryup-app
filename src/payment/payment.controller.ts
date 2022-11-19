@@ -24,4 +24,13 @@ export class PaymentController {
   async findAll(@Req() req) {
     return this.paymentService.findAll(req.user.id);
   }
+
+  @Get('/monthly')
+  @UseGuards(jwtGuard)
+  @ApiBearerAuth('accessToken')
+  @ApiOperation({ summary: '월간 결제내역' })
+  async monthlyPayments(@Req() req) {
+    const { id } = req.user;
+    return this.paymentService.monthlyPayments(id);
+  }
 }
