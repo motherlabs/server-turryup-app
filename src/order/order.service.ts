@@ -18,6 +18,10 @@ export class OrderService {
       where: { userId },
       include: {
         Order: { where: { createdAt: { gt: monthly }, status: '픽업 완료' } },
+        Goods: {
+          include: { GoodsImage: true },
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
   }
