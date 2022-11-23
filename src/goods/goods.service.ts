@@ -20,33 +20,39 @@ export class GoodsService {
     userLatitude: number,
     userLongitude: number,
     userSelectedRange: number,
+    skip: number,
+    take: number,
   ) {
+    const plusLatitudeByyRange =
+      //eslint-disable-next-line
+      userLatitude + userSelectedRange / 109.958489129649955;
+    const minusLatitudeByRange =
+      //eslint-disable-next-line
+      userLatitude - userSelectedRange / 109.958489129649955;
+    const plusLongitudeByRange = userLongitude + userSelectedRange / 88.74;
+    const minusLongitudeByRange = userLongitude - userSelectedRange / 88.74;
     const goodsList = await this.prismaService.goods.findMany({
+      take,
+      skip,
       include: { store: true, GoodsImage: true, category: true },
-      where: { state: DefaultState.NORMAL },
+      where: {
+        state: DefaultState.NORMAL,
+        store: {
+          latitude: { gt: minusLatitudeByRange, lt: plusLatitudeByyRange },
+          longitude: { gt: minusLongitudeByRange, lt: plusLongitudeByRange },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
     });
-    if (goodsList.length > 0) {
-      const plusLatitudeByyRange =
-        //eslint-disable-next-line
-        userLatitude + userSelectedRange / 109.958489129649955;
-      const minusLatitudeByRange =
-        //eslint-disable-next-line
-        userLatitude - userSelectedRange / 109.958489129649955;
-      const plusLongitudeByRange = userLongitude + userSelectedRange / 88.74;
-      const minusLongitudeByRange = userLongitude - userSelectedRange / 88.74;
+    // const filteredStoreList = goodsList.filter(
+    //   (v) =>
+    //     v.store.latitude < plusLatitudeByyRange &&
+    //     v.store.latitude > minusLatitudeByRange &&
+    //     v.store.longitude < plusLongitudeByRange &&
+    //     v.store.longitude > minusLongitudeByRange,
+    // );
 
-      const filteredStoreList = goodsList.filter(
-        (v) =>
-          v.store.latitude < plusLatitudeByyRange &&
-          v.store.latitude > minusLatitudeByRange &&
-          v.store.longitude < plusLongitudeByRange &&
-          v.store.longitude > minusLongitudeByRange,
-      );
-
-      return filteredStoreList;
-    } else {
-      return goodsList;
-    }
+    return goodsList;
   }
 
   async findAll(storeId: number) {

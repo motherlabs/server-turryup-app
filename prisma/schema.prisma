@@ -14,7 +14,6 @@ enum UserRole {
   USER
   ADMIN
   PARTNER
-  TASTER
 }
 
 enum UserState {
@@ -59,7 +58,7 @@ model Store {
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId          Int          @unique
   name            String
-  storeNumber     String       @unique
+  storeNumber     String
   roadNameAddress String
   detailAddress   String
   picupZone       String

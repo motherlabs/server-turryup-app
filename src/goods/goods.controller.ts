@@ -45,13 +45,25 @@ export class GoodsController {
       },
     },
   })
+  @ApiQuery({
+    name: 'skip',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'take',
+    required: true,
+  })
   @ApiOperation({ summary: '상품 리스트' })
-  async findAllByUserLocationRange(@Body() body) {
+  async findAllByUserLocationRange(@Body() body, @Query() query) {
     const { latitude, longitude, range } = body;
+    const { skip, take } = query;
+
     return this.goodsService.findAllByUserLocationRange(
       latitude,
       longitude,
       range,
+      +skip,
+      +take,
     );
   }
 

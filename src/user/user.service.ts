@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRole, UserState } from '@prisma/client';
+import { DefaultState, UserRole, UserState } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateRoleDto } from './dto/updateRole.dto';
 
@@ -37,11 +37,8 @@ export class UserService {
   async findAll() {
     return await this.prismaService.user.findMany({
       where: {
-        OR: [
-          { role: UserRole.PARTNER },
-          { role: UserRole.USER },
-          { role: UserRole.TASTER },
-        ],
+        OR: [{ role: UserRole.PARTNER }, { role: UserRole.USER }],
+        NOT: [{ state: UserState.DELETE }],
       },
       select: {
         id: true,
@@ -53,7 +50,35 @@ export class UserService {
   }
 
   async delete(userId: number) {
-    return;
-    // return await this.prismaService.user.delete({ where: { id: userId } });
+    const now = Date.now();
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      include: { Store: { include: { Goods: true } } },
+    });
+    if (user.Store) {
+      await this.prismaService.store.update({
+        where: { userId: user.id },
+        data: { state: DefaultState.DELETE },
+      });
+      if (user.Store.Goods.length > 0) {
+        const goodsIdList: number[] = [];
+        user.Store.Goods.map((v) => {
+          goodsIdList.push(v.id);
+        });
+        await this.prismaService.goods.updateMany({
+          where: { id: { in: goodsIdList } },
+          data: { state: DefaultState.DELETE },
+        });
+      }
+    }
+    await this.prismaService.user.update({
+      where: { id: user.id },
+      data: {
+        phoneNumber: `${user.phoneNumber}-${now}`,
+        fcmToken: '',
+        state: UserState.DELETE,
+      },
+    });
+    return true;
   }
 }
