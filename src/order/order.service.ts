@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { UpdateOrderDto } from './dto/updateOrder.dto';
@@ -14,7 +14,7 @@ export class OrderService {
     const month = date.getMonth();
     const monthly = new Date(year, month, 1, 0, 0, 0, 0);
 
-    return await this.prismaService.store.findUnique({
+    const store = await this.prismaService.store.findUnique({
       where: { userId },
       include: {
         Order: { where: { createdAt: { gt: monthly }, status: '픽업 완료' } },
@@ -24,6 +24,16 @@ export class OrderService {
         },
       },
     });
+    if (store) {
+      return {
+        response: {
+          statusCode: 200,
+        },
+        data: store,
+      };
+    } else {
+      return new NotFoundException();
+    }
   }
 
   async create(createOrderDto: CreateOrderDto) {
@@ -57,8 +67,8 @@ export class OrderService {
         admin.messaging().send({
           token: targetUser.fcmToken,
           notification: {
-            title: '주문이 들어왔습니다.',
-            body: `상품 ${goodsName}\n수량 ${quantity}개`,
+            title: '주문이 들어왔어요! 상품을 확인해주세요.',
+            body: `${goodsName} (${quantity}개)`,
           },
           android: {
             notification: {

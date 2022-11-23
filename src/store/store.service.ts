@@ -43,6 +43,7 @@ export class StoreService {
   async findOne(userId: number) {
     const store = await this.prismaService.store.findUnique({
       where: { userId: userId },
+
       include: {
         Goods: {
           include: { GoodsImage: true, store: true },
