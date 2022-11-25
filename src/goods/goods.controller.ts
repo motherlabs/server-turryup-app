@@ -53,10 +53,14 @@ export class GoodsController {
     name: 'take',
     required: true,
   })
+  @ApiQuery({
+    name: 'category',
+    required: true,
+  })
   @ApiOperation({ summary: '상품 리스트' })
   async findAllByUserLocationRange(@Body() body, @Query() query) {
     const { latitude, longitude, range } = body;
-    const { skip, take } = query;
+    const { skip, take, category } = query;
 
     return this.goodsService.findAllByUserLocationRange(
       latitude,
@@ -64,6 +68,7 @@ export class GoodsController {
       range,
       +skip,
       +take,
+      category,
     );
   }
 
@@ -100,16 +105,16 @@ export class GoodsController {
   @UseGuards(jwtGuard)
   @ApiBearerAuth('accessToken')
   @ApiOperation({ summary: '상품 수정' })
-  // @ApiConsumes('multipart/form-data')
-  // @UseInterceptors(AnyFilesInterceptor())
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(AnyFilesInterceptor())
   @ApiParam({ name: 'goodsId', required: true })
   async update(
     @Body() updateGoodsDto: UpdateGoodsDto,
-    // @UploadedFiles() image: Array<Express.Multer.File>,
+    @UploadedFiles() image: Array<Express.Multer.File>,
     @Param() param,
   ) {
     const { goodsId } = param;
-    return this.goodsService.update(parseInt(goodsId), updateGoodsDto);
+    return this.goodsService.update(parseInt(goodsId), updateGoodsDto, image);
   }
 
   @Patch('/:goodsId')

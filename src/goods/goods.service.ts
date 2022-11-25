@@ -22,6 +22,7 @@ export class GoodsService {
     userSelectedRange: number,
     skip: number,
     take: number,
+    category: string,
   ) {
     const plusLatitudeByyRange =
       //eslint-disable-next-line
@@ -31,19 +32,38 @@ export class GoodsService {
       userLatitude - userSelectedRange / 109.958489129649955;
     const plusLongitudeByRange = userLongitude + userSelectedRange / 88.74;
     const minusLongitudeByRange = userLongitude - userSelectedRange / 88.74;
-    const goodsList = await this.prismaService.goods.findMany({
-      take,
-      skip,
-      include: { store: true, GoodsImage: true, category: true },
-      where: {
-        state: DefaultState.NORMAL,
-        store: {
-          latitude: { gt: minusLatitudeByRange, lt: plusLatitudeByyRange },
-          longitude: { gt: minusLongitudeByRange, lt: plusLongitudeByRange },
+    if (category === '') {
+      const goodsList = await this.prismaService.goods.findMany({
+        take,
+        skip,
+        include: { store: true, GoodsImage: true, category: true },
+        where: {
+          state: DefaultState.NORMAL,
+          store: {
+            latitude: { gt: minusLatitudeByRange, lt: plusLatitudeByyRange },
+            longitude: { gt: minusLongitudeByRange, lt: plusLongitudeByRange },
+          },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+      });
+      return goodsList;
+    } else {
+      const goodsList = await this.prismaService.goods.findMany({
+        take,
+        skip,
+        include: { store: true, GoodsImage: true, category: true },
+        where: {
+          state: DefaultState.NORMAL,
+          store: {
+            latitude: { gt: minusLatitudeByRange, lt: plusLatitudeByyRange },
+            longitude: { gt: minusLongitudeByRange, lt: plusLongitudeByRange },
+          },
+          category: { name: category },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return goodsList;
+    }
     // const filteredStoreList = goodsList.filter(
     //   (v) =>
     //     v.store.latitude < plusLatitudeByyRange &&
@@ -51,8 +71,6 @@ export class GoodsService {
     //     v.store.longitude < plusLongitudeByRange &&
     //     v.store.longitude > minusLongitudeByRange,
     // );
-
-    return goodsList;
   }
 
   async findAll(storeId: number) {
@@ -142,7 +160,7 @@ export class GoodsService {
   async update(
     goodId: number,
     updateGoodsDto: UpdateGoodsDto,
-    // image: Array<Express.Multer.File>,
+    image: Array<Express.Multer.File>,
   ) {
     const {
       discount,
@@ -152,6 +170,8 @@ export class GoodsService {
       quantity,
       salePrice,
       categoryId,
+      deleteImageIdList,
+      deleteImageLocationList,
     } = updateGoodsDto;
 
     const updatedGoods = await this.prismaService.goods.update({
@@ -167,46 +187,43 @@ export class GoodsService {
       },
     });
 
-    // const data = [];
-    // if (updateGoods) {
-    //   data.push(updatedGoods);
-    //   if (image.length > 0) {
-    //     const imageList: {
-    //       goodsId: number;
-    //       location: string;
-    //     }[] = [];
-
-    //     const imageLocation = await this.uploadService.uploadImage(
-    //       'goods',
-    //       image,
-    //     );
-    //     imageLocation.map((v) => {
-    //       imageList.push({
-    //         goodsId: updatedGoods.id,
-    //         location: v,
-    //       });
-    //     });
-    //     const createdGoodsImages =
-    //       await this.prismaService.goodsImage.createMany({ data: imageList });
-
-    //     data.push(createdGoodsImages);
-    //   }
-    //   if (deleteImageIdList.length > 0) {
-    //     const imageIdList = deleteImageIdList.split(',');
-    //     const imageIdListTypeCast: number[] = [];
-    //     imageIdList.map((v) => {
-    //       imageIdListTypeCast.push(parseInt(v));
-    //     });
-    //     const imageLocationList = deleteImageLocationList.split(',');
-    //     await this.uploadService.deleteImage(imageLocationList);
-    //     await this.prismaService.goodsImage.deleteMany({
-    //       where: { id: { in: imageIdListTypeCast } },
-    //     });
-    //   }
-    //   return data;
-    // }
+    const data = [];
     if (updatedGoods) {
-      return updatedGoods;
+      data.push(updatedGoods);
+      if (image.length > 0) {
+        const imageList: {
+          goodsId: number;
+          location: string;
+        }[] = [];
+
+        const imageLocation = await this.uploadService.uploadImage(
+          'goods',
+          image,
+        );
+        imageLocation.map((v) => {
+          imageList.push({
+            goodsId: updatedGoods.id,
+            location: v,
+          });
+        });
+        const createdGoodsImages =
+          await this.prismaService.goodsImage.createMany({ data: imageList });
+
+        data.push(createdGoodsImages);
+      }
+      if (deleteImageIdList.length > 0) {
+        const imageIdList = deleteImageIdList.split(',');
+        const imageIdListTypeCast: number[] = [];
+        imageIdList.map((v) => {
+          imageIdListTypeCast.push(parseInt(v));
+        });
+        const imageLocationArray = deleteImageLocationList.split(',');
+        await this.uploadService.deleteImage(imageLocationArray);
+        await this.prismaService.goodsImage.deleteMany({
+          where: { id: { in: imageIdListTypeCast } },
+        });
+      }
+      return data;
     } else {
       return new InternalServerErrorException();
     }
