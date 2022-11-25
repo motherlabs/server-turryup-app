@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateGoodsDto {
   @ApiProperty({ required: true })
@@ -30,18 +30,18 @@ export class UpdateGoodsDto {
   @IsNotEmpty()
   readonly quantity: string;
 
-  // @ApiProperty({ required: true })
-  // @IsNotEmpty()
-  // readonly deleteImageIdList: string;
+  @ApiProperty({ required: false })
+  @IsOptional()
+  readonly deleteImageIdList: string;
 
-  // @ApiProperty({ required: true })
-  // @IsNotEmpty()
-  // readonly deleteImageLocationList: string;
+  @ApiProperty({ required: false })
+  @IsOptional()
+  readonly deleteImageLocationList: string;
 
-  // @ApiProperty({
-  //   items: { type: 'string', format: 'binary' },
-  //   type: 'array',
-  //   required: true,
-  // })
-  // readonly image;
+  @ApiProperty({
+    items: { type: 'string', format: 'binary' },
+    type: 'array',
+    required: false,
+  })
+  readonly image;
 }
