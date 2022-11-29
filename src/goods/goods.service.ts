@@ -113,6 +113,7 @@ export class GoodsService {
       quantity,
       salePrice,
       storeId,
+      isAutoDiscount,
     } = createGoodsDto;
 
     const createdGoods = await this.prismaService.goods.create({
@@ -124,6 +125,7 @@ export class GoodsService {
         quantity: parseInt(quantity),
         salePrice: parseInt(salePrice),
         expiryDate: new Date(expiryDate),
+        isAutoDiscount: parseInt(isAutoDiscount),
         name,
       },
     });
@@ -169,6 +171,7 @@ export class GoodsService {
       originPrice,
       quantity,
       salePrice,
+      isAutoDiscount,
       categoryId,
       deleteImageIdList,
       deleteImageLocationList,
@@ -182,6 +185,7 @@ export class GoodsService {
         originPrice: parseInt(originPrice),
         quantity: parseInt(quantity),
         salePrice: parseInt(salePrice),
+        isAutoDiscount: parseInt(isAutoDiscount),
         expiryDate: new Date(expiryDate),
         name,
       },

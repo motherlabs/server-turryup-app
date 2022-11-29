@@ -67,7 +67,7 @@ export class OrderService {
         admin.messaging().send({
           token: targetUser.fcmToken,
           notification: {
-            title: '주문이 들어왔어요! 상품을 확인해주세요.',
+            title: '대표님, 주문이 들어왔어요! 상품을 확인해주세요.',
             body: `${goodsName} (${quantity}개)`,
           },
           android: {

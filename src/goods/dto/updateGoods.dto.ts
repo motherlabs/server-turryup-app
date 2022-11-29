@@ -30,6 +30,10 @@ export class UpdateGoodsDto {
   @IsNotEmpty()
   readonly quantity: string;
 
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  readonly isAutoDiscount: string;
+
   @ApiProperty({ required: false })
   @IsOptional()
   readonly deleteImageIdList: string;

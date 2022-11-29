@@ -34,6 +34,10 @@ export class CreateGoodsDto {
   @IsNotEmpty()
   readonly quantity: string;
 
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  readonly isAutoDiscount: string;
+
   @ApiProperty({
     items: { type: 'string', format: 'binary' },
     type: 'array',
