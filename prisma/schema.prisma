@@ -81,23 +81,25 @@ model Category {
 }
 
 model Goods {
-  id          Int          @id @default(autoincrement())
-  store       Store        @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  storeId     Int
-  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  categoryId  Int
-  name        String
-  originPrice Int
-  salePrice   Int
-  discount    Int
-  expiryDate  DateTime     @db.Date
-  quantity    Int
-  state       DefaultState @default(NORMAL)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  GoodsImage  GoodsImage[]
-  Order       Order[]
-  Basket      Basket[]
+  id                 Int          @id @default(autoincrement())
+  store              Store        @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storeId            Int
+  category           Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categoryId         Int
+  name               String
+  originPrice        Int
+  salePrice          Int
+  discount           Int
+  expiryDate         DateTime     @db.Date
+  quantity           Int
+  isAutoDiscount     Int          @default(0)
+  additionalDiscount Int          @default(0)
+  state              DefaultState @default(NORMAL)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  GoodsImage         GoodsImage[]
+  Order              Order[]
+  Basket             Basket[]
 }
 
 model GoodsImage {

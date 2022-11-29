@@ -18,6 +18,7 @@ import { CategoryModule } from './category/category.module';
 import { StoreModule } from './store/store.module';
 import { StoreService } from './store/store.service';
 import { BasketModule } from './basket/basket.module';
+import { BatchModule } from './batch/batch.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BasketModule } from './basket/basket.module';
     OrderModule,
     UploadModule,
     BasketModule,
+    BatchModule,
   ],
   controllers: [AppController],
   providers: [
