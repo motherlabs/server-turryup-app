@@ -17,4 +17,8 @@ export class CreateAddressDto {
   @ApiProperty({ required: true })
   @IsNumber()
   readonly longitude: number;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  readonly type: string;
 }
