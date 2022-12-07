@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { jwtGuard } from 'src/auth/jwt.guard';
 import { BasketService } from './basket.service';
@@ -65,5 +73,29 @@ export class BasketController {
     const { basketIdList } = body;
     const { user } = req;
     return this.basketService.deleteAll(basketIdList, user.id);
+  }
+
+  @Patch('/quantity')
+  @UseGuards(jwtGuard)
+  @ApiBearerAuth('accessToken')
+  @ApiOperation({ summary: '수량 수정' })
+  @ApiBody({
+    type: 'object',
+    schema: {
+      properties: {
+        basketId: {
+          type: 'number',
+          nullable: false,
+        },
+        quantity: {
+          type: 'number',
+          nullable: false,
+        },
+      },
+    },
+  })
+  async updateQuantity(@Body() body) {
+    const { basketId, quantity } = body;
+    return this.basketService.updateQuantity(basketId, quantity);
   }
 }
