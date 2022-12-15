@@ -19,6 +19,7 @@ import { StoreModule } from './store/store.module';
 import { StoreService } from './store/store.service';
 import { BasketModule } from './basket/basket.module';
 import { BatchModule } from './batch/batch.module';
+import { InfoModule } from './info/info.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { BatchModule } from './batch/batch.module';
     UploadModule,
     BasketModule,
     BatchModule,
+    InfoModule,
   ],
   controllers: [AppController],
   providers: [
