@@ -27,6 +27,11 @@ enum DefaultState {
   DELETE
 }
 
+enum GenderType {
+  MALE
+  FEMALE
+}
+
 model User {
   id          Int       @id @default(autoincrement())
   uniqueCode  String    @unique
@@ -39,6 +44,7 @@ model User {
   Store       Store?
   Payment     Payment[]
   Basket      Basket[]
+  Info        Info?
 }
 
 model Address {
@@ -73,6 +79,15 @@ model Store {
   updatedAt       DateTime     @updatedAt
   Goods           Goods[]
   Order           Order[]
+}
+
+model Info {
+  id            Int        @id @default(autoincrement())
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        Int        @unique
+  gender        GenderType
+  birthYear     Int
+  interestGoods String
 }
 
 model Category {
