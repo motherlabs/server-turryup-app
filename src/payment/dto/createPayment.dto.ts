@@ -9,4 +9,12 @@ export class CreatePaymentDto {
   @ApiProperty({ required: true })
   @IsString()
   readonly method: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  readonly merchant_uid: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  readonly imp_uid: string;
 }
