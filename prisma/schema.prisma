@@ -127,14 +127,17 @@ model GoodsImage {
 }
 
 model Payment {
-  id        Int          @id @default(autoincrement())
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    Int
-  amount    Int
-  method    String
-  state     DefaultState @default(NORMAL)
-  createdAt DateTime     @default(now())
-  Order     Order[]
+  id           Int          @id @default(autoincrement())
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       Int
+  imp_uid      String       @unique
+  merchant_uid String       @unique
+  amount       Int
+  cancelAmount Int          @default(0)
+  method       String
+  state        DefaultState @default(NORMAL)
+  createdAt    DateTime     @default(now())
+  Order        Order[]
 }
 
 model Order {
