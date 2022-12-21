@@ -87,7 +87,7 @@ export class AuthService {
     const authNumber: string = this.makeRand6Num();
 
     const body = {
-      body: `[떠리업 플랫폼] 인증번호 [${authNumber}]를 입력해주세요.`,
+      body: `[덕템 플랫폼] 인증번호 [${authNumber}]를 입력해주세요.`,
       sendNo: `${process.env.HOST_PHONE_NUMBER}`,
       from: `${process.env.HOST_PHONE_NUMBER}`,
       recipientList: [
