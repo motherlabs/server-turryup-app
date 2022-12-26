@@ -164,7 +164,8 @@ export class PaymentService {
                 this.prismaService.payment.update({
                   where: { id: existPayment.id },
                   data: {
-                    cancelAmount: existPayment.cancelAmount + cancelableAmount,
+                    cancelAmount:
+                      existPayment.cancelAmount + cancelRequestAmount,
                   },
                 }),
               ]);
