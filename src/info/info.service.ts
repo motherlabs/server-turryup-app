@@ -21,7 +21,6 @@ export class InfoService {
     const existInfo = await this.prismaService.info.findUnique({
       where: { userId },
     });
-    console.log('check: ', existInfo);
     if (existInfo) {
       return true;
     } else {
