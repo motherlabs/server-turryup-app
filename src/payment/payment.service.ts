@@ -134,10 +134,12 @@ export class PaymentService {
       if (existPayment) {
         const accessTokenResponse = await this.getImportTokenHandler();
         const accessToken = accessTokenResponse.data.response.access_token;
+        console.log('check token: ', accessToken);
 
         if (accessToken) {
           const cancelableAmount =
             existPayment.amount - existPayment.cancelAmount;
+          console.log('cancelabbleAmount: ', cancelableAmount);
 
           if (cancelableAmount <= 0) {
             return new BadRequestException('이미 전액환불된 주문입니다.');
